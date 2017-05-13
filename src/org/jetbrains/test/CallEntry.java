@@ -1,5 +1,7 @@
 package org.jetbrains.test;
 
+import com.google.gson.annotations.Expose;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -7,10 +9,15 @@ import java.util.List;
 
 public class CallEntry {
     private final CallEntry parent;
+    @Expose
     private final List<CallEntry> nestedCalls = new ArrayList<>();
+    @Expose
     private final String methodName;
+    @Expose
     private final List<Object> args;
+    @Expose
     private long startedTimeMillis;
+    @Expose
     private long endedTimeMillis;
 
     public CallEntry(CallEntry parent) {

@@ -1,8 +1,12 @@
 package org.jetbrains.test;
 
+import com.google.gson.annotations.Expose;
+
 public class CallTree {
+    @Expose
     private CallEntry root;
     private CallEntry context;
+    @Expose
     private String threadName;
 
     public void init(String threadName) {

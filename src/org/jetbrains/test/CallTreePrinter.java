@@ -1,15 +1,26 @@
 package org.jetbrains.test;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 
-public final class CallTreePrinter {
+public class CallTreePrinter {
     public static final String NESTED_ENTRY_EMPTY_OFFSET = "  ";
     public static final String NESTED_ENTRY_OFFSET = "+ ";
     public static final String LAST_ENTRY_PREFIX = "\\--";
     public static final String ENTRY_PREFIX = "+--";
 
-    private CallTreePrinter() {
+    public static void main(String[] args) {
+        List<String> fileNames;
+        if (args.length == 0) {
+            fileNames = Collections.singletonList(readFileNameFromStdin());
+        } else {
+            fileNames = Arrays.asList(args);
+        }
+
+        fileNames.forEach(CallTreePrinter::tryPrintCallTreeFromFile);
     }
 
     public static synchronized void printTree(CallTree callTree) {
@@ -25,6 +36,20 @@ public final class CallTreePrinter {
                 printCallEntry(nestedCall, startTime, i, nestedCalls.size(), NESTED_ENTRY_EMPTY_OFFSET);
             }
         }
+    }
+
+    private static void tryPrintCallTreeFromFile(String fileName) {
+        try {
+            CallTree callTree = CallTreeSerializer.readFromFile(fileName);
+            printTree(callTree);
+        } catch (Exception e) {
+            System.err.println("Unable to read call tree from the file " + fileName + ": " + e.getMessage());
+        }
+    }
+
+    private static String readFileNameFromStdin() {
+        System.out.print("Enter file name: ");
+        return new Scanner(System.in).nextLine();
     }
 
     private static void printCallEntry(CallEntry callEntry, long startTime, int callNo,
