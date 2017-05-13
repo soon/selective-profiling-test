@@ -9,7 +9,8 @@ import java.util.Random;
  */
 public class DummyApplication {
     private final List<String> args;
-    private Random random = new Random(System.nanoTime());
+    private final Random random = new Random(System.nanoTime());
+    private final CallTree callTree = new CallTree();
 
     public DummyApplication(List<String> args) {
         this.args = args;
@@ -37,51 +38,105 @@ public class DummyApplication {
     }
 
     private void abc(String s) {
-        //your code here
+        callTree.startCall("abc", s);
 
         sleep();
         if (stop()) {
             //do nothing
-        }
-        else if (nextBoolean()) {
+        } else if (nextBoolean()) {
             def(nextArg());
-        }
-        else {
+            foo(nextArg(), nextBoolean());
+        } else {
             xyz(nextArg());
+            bar(nextArg(), nextBoolean());
         }
+
+        callTree.endCall();
     }
 
     private void def(String s) {
-        //your code here
+        callTree.startCall("def", s);
 
         sleep();
         if (stop()) {
             //do nothing
-        }
-        else if (nextBoolean()) {
+        } else if (nextBoolean()) {
             abc(nextArg());
-        }
-        else {
+        } else {
             xyz(nextArg());
         }
+
+        callTree.endCall();
     }
 
     private void xyz(String s) {
-        //your code here
+        callTree.startCall("xyz", s);
 
         sleep();
         if (stop()) {
             //do nothing
-        }
-        else if (nextBoolean()) {
+        } else if (nextBoolean()) {
             abc(nextArg());
-        }
-        else {
+        } else {
             def(nextArg());
         }
+
+        callTree.endCall();
+    }
+
+    private void foo(String s, boolean b) {
+        callTree.startCall("foo", s, b);
+
+        sleep();
+        if (stop()) {
+            //do nothing
+        } else if (nextBoolean()) {
+            bar(nextArg(), nextBoolean());
+        } else {
+            baz(nextArg(), nextBoolean());
+        }
+
+        callTree.endCall();
+    }
+
+    private void baz(String s, boolean b) {
+        callTree.startCall("baz", s, b);
+
+        sleep();
+        if (stop()) {
+            //do nothing
+        } else if (nextBoolean()) {
+            foo(nextArg(), nextBoolean());
+        } else {
+            bar(nextArg(), nextBoolean());
+        }
+
+        callTree.endCall();
+    }
+
+    private void bar(String s, boolean b) {
+        callTree.startCall("bar", s, b);
+
+        sleep();
+        if (stop()) {
+            //do nothing
+        } else if (nextBoolean()) {
+            foo(nextArg(), nextBoolean());
+        } else {
+            baz(nextArg(), nextBoolean());
+        }
+
+        callTree.endCall();
     }
 
     public void start() {
+        Thread currentThread = Thread.currentThread();
+        String threadName = currentThread.getName();
+        callTree.init(threadName);
         abc(nextArg());
+    }
+
+    public CallTree getCallTree() {
+        return callTree;
     }
 }

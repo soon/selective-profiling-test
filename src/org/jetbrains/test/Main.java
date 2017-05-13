@@ -10,12 +10,17 @@ public class Main {
 
     public static void main(String[] args) {
         ExecutorService service = Executors.newFixedThreadPool(3);
-        for(int i = 0; i < 5; i++) {
+        for (int i = 0; i < 5; i++) {
             int start = 100 * i;
             List<String> arguments = IntStream.range(start, start + 10)
-                    .mapToObj(Integer :: toString)
+                    .mapToObj(Integer::toString)
                     .collect(Collectors.toList());
-            service.submit(() -> new DummyApplication(arguments).start());
+            service.submit(() -> {
+                DummyApplication dummyApplication = new DummyApplication(arguments);
+                dummyApplication.start();
+                CallTree callTree = dummyApplication.getCallTree();
+                CallTreePrinter.printTree(callTree);
+            });
         }
         service.shutdown();
     }
